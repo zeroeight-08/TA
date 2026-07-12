@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Arguments -->
+  <arg name="cmd_vel_topic" default="/cmd_vel" />
+  <arg name="odom_topic" default="odom" />
+  
+  <!-- Catatan: Argumen 'move_forward_only' dihapus karena di TEB, 
+       larangan mundur diatur langsung di dalam file teb_local_planner_params.yaml -->
+
+  <!-- move_base -->
+  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+    
+    <!-- 1. MENGGANTI LOCAL PLANNER KE TEB -->
+    <param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS" />
+    
+    <rosparam file="$(find autonomus_mobile_robot)/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find autonomus_mobile_robot)/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
+    <rosparam file="$(find autonomus_mobile_robot)/config/local_costmap_params.yaml" command="load" />
+    <rosparam file="$(find autonomus_mobile_robot)/config/global_costmap_params.yaml" command="load" />
+    <rosparam file="$(find autonomus_mobile_robot)/config/move_base_params.yaml" command="load" />
+    
+    <!-- 2. MEMUAT FILE PARAMETER TEB -->
+    <rosparam file="$(find autonomus_mobile_robot)/config/teb_local_planner_params.yaml" command="load" />
+    
+    <param name="recovery_behavior_enabled" value="true"/>
+    <param name="clearing_rotation_allowed" value="true"/>    
+    
+    <remap from="cmd_vel" to="$(arg cmd_vel_topic)"/>
+    <remap from="odom" to="$(arg odom_topic)"/>
+  </node>
+</launch>
